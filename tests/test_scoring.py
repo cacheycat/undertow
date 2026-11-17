@@ -1,8 +1,8 @@
 import time
 
 import pytest
-from agentkit import Memory, Store
 
+from agentkit import Memory, Store
 from lib import agent
 
 
