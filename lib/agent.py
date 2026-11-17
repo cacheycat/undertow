@@ -16,7 +16,7 @@ import statistics
 import time
 from pathlib import Path
 
-from agentkit import END, LLM, Index, Memory, StateGraph, load_cards
+from agentkit import LLM, Index, Memory, StateGraph, load_cards
 
 from . import hyper
 
@@ -106,7 +106,8 @@ def _memory_block(recalled: list[dict]) -> str | None:
 def brief(emit, *, memory: Memory, llm: LLM, store, history: list[dict]) -> dict:
     st: dict = {"state": None, "whales": [], "crowd": [], "structs": [], "recalled": [], "stances": [],
                 "headline": None, "desk_note": None, "audit": [], "scored_feedback": None}
-    log_call = lambda rec: emit("llm", rec)
+    def log_call(rec):
+        emit("llm", rec)
 
     def observe(_):
         st["state"] = hyper.market_state()
@@ -135,7 +136,7 @@ def brief(emit, *, memory: Memory, llm: LLM, store, history: list[dict]) -> dict
 
     def fallback_stances():
         out = []
-        for c, cr in zip(st["state"]["coins"], st["crowd"]):
+        for c, cr in zip(st["state"]["coins"], st["crowd"], strict=True):
             crowded = abs(cr["net_tilt"]) > 0.5 and abs(c["funding_apr"]) > 0.15
             stance = "flat" if not crowded else ("short" if cr["net_tilt"] > 0 else "long")
             out.append({"coin": c["coin"], "stance": stance, "conviction": 2 if crowded else 1,
@@ -185,7 +186,7 @@ def brief(emit, *, memory: Memory, llm: LLM, store, history: list[dict]) -> dict
             "For any contradicted stance, give a revision (stance and conviction).",
             "Data:\n" + "\n".join(
                 f"- {c['coin']}: 24h {c['chg_24h']*100:+.1f}%, funding {c['funding_apr']*100:+.1f}% APR, tilt {cr['net_tilt']:+.2f}, "
-                f"gross {fmtusd(cr['gross_usd'])}" for c, cr in zip(st["state"]["coins"], st["crowd"])),
+                f"gross {fmtusd(cr['gross_usd'])}" for c, cr in zip(st["state"]["coins"], st["crowd"], strict=True)),
             "Briefing:\n" + "\n".join(f"- {s['coin']} {s['stance']} (conv {s['conviction']}): {s['thesis']} | invalidation: {s['invalidation']}" for s in st["stances"]),
         ])
         out = llm.json("audit", SYSTEM, user, AUDIT_SCHEMA,
@@ -292,8 +293,8 @@ def fmtusd(v: float) -> str:
 
 def describe_graph() -> dict:
     g = StateGraph("undertow")
-    for n, l, k in [("observe", "Observe", "tool"), ("crowd", "Crowd", "tool"), ("recall", "Recall", "memory"),
+    for n, label, k in [("observe", "Observe", "tool"), ("crowd", "Crowd", "tool"), ("recall", "Recall", "memory"),
                     ("write", "Brief", "llm"), ("audit", "Audit", "llm"), ("file", "File", "step")]:
-        g.node(n, lambda s: None, l, k)
+        g.node(n, lambda s: None, label, k)
     g.edge("observe", "crowd").edge("crowd", "recall").edge("recall", "write").edge("write", "audit").edge("audit", "file")
     return g.describe()

@@ -27,7 +27,7 @@ def market_state() -> dict:
     """Mark, funding, open interest and 24h move for the tracked coins."""
     meta, ctxs = _info({"type": "metaAndAssetCtxs"})
     by_coin = {}
-    for asset, ctx in zip(meta["universe"], ctxs):
+    for asset, ctx in zip(meta["universe"], ctxs, strict=False):  # tolerate a short ctx list
         name = asset["name"]
         if name not in COINS:
             continue
