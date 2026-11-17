@@ -58,7 +58,7 @@ function renderBoard() {
       h("td", {}, cr.net_tilt != null ? tiltBar(cr.net_tilt) : "–", h("span", { class: "sub" }, cr.whales_long != null ? `${cr.whales_long}L / ${cr.whales_short}S · ${fmt.usd(cr.gross_usd)}` : "")),
       h("td", {}, cr.avg_leverage ? `${cr.avg_leverage}×` : "–"),
       h("td", {}, st ? h("span", { class: `stance ${st.stance}` }, st.stance, h("span", { class: "conv" }, "•".repeat(st.conviction))) : h("span", { class: "dim" }, "–")),
-      h("td", {}, v ? [h("span", { class: `verdict ${v.verdict}` }, fmt.signedPct(v.move)), h("span", { class: "sub" }, v.verdict)] : h("span", { class: "dim" }, "–"))));
+      h("td", {}, v ? [h("span", { class: `verdict ${v.verdict}` }, fmt.signedPct(v.move)), h("span", { class: "sub" }, v.vs_btc != null ? `${v.verdict} · ${fmt.signedPct(v.vs_btc)} vs BTC` : v.verdict)] : h("span", { class: "dim" }, "–"))));
     if (S.open === c.coin && st) {
       rows.push(h("tr", { class: "detail-row" }, h("td", { colspan: 8 },
         h("b", {}, "Thesis: "), st.thesis, " ", h("span", { class: "inv" }, "Invalidation: " + st.invalidation),
@@ -118,7 +118,7 @@ function renderScoreboard() {
       h("div", {}, h("dt", {}, "Conv ≥4 hit rate"), h("dd", {}, hi.length ? fmt.pct(hi.filter((s) => s.verdict === "correct").length / hi.length, 0) : "–"))),
     ...scored.slice(-8).reverse().map((r) => h("div", { class: "score-row" },
       h("span", {}, new Date(r.ts * 1000).toLocaleString("en-GB", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })),
-      h("span", { class: "marks" }, r.scored.stances.map((s) => h("i", { class: s.verdict, title: `${s.coin} ${s.stance}: ${fmt.signedPct(s.move)}` }))),
+      h("span", { class: "marks" }, r.scored.stances.map((s) => h("i", { class: s.verdict, title: `${s.coin} ${s.stance}: ${fmt.signedPct(s.move)}${s.vs_btc != null ? ` (${fmt.signedPct(s.vs_btc)} vs BTC)` : ""}` }))),
       h("span", {}, fmt.pct(r.scored.hit_rate, 0)))));
 }
 
