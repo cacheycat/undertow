@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Undertow · positioning desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"><i></i><i></i><i></i></span>
+    <div><h1>Undertow</h1><p>What the big money is actually positioned for</p></div>
+  </div>
+  <div class="controls">
+    <label>Briefing<select id="run-select"></select></label>
+    <button id="score" type="button">Re-score</button>
+    <button id="start" type="button" class="primary">New briefing</button>
+  </div>
+</header>
+
+<main>
+  <section class="panel lede" id="lede"></section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>Desk loop</h2><span class="hint" id="mode"></span></div>
+    <div id="flow"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>The board</h2><span class="hint">live market · whale crowd · the desk's call · outcome so far</span></div>
+    <div class="table-wrap"><table id="board"></table></div>
+  </section>
+
+  <div class="grid two">
+    <section class="panel">
+      <div class="panel-head"><h2 id="chart-title">Price</h2><span class="hint">1h bars · call level marked</span></div>
+      <div id="chart"></div>
+      <div class="panel-head sub"><h2>Whale panel</h2><span class="hint">large profitable accounts, public state</span></div>
+      <div class="table-wrap"><table id="whales"></table></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>Audit</h2><span class="hint">second pass checks each thesis against the data</span></div>
+      <div id="audit"></div>
+      <div class="panel-head sub"><h2>Scoreboard</h2><span class="hint">hit rate of past briefings at the horizon</span></div>
+      <div id="scoreboard"></div>
+      <div class="panel-head sub"><h2>Playbook memory</h2><span class="hint">lessons distilled from scored outcomes</span></div>
+      <div id="playbook"></div>
+      <div class="panel-head sub"><h2>Trace</h2><span class="hint" id="trace-hint"></span></div>
+      <div id="trace"></div>
+    </section>
+  </div>
+</main>
+<footer>Read-only desk over public Hyperliquid data. Stances are paper calls scored for research; nothing here trades, and none of it is investment advice.</footer>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
