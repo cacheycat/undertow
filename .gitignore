@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+.claude/
+# local dev link to a sibling agentkit checkout
+/agentkit
+# runtime state and downloaded market data
+data/

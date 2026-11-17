@@ -1,0 +1,2 @@
+agentkit @ git+https://github.com/cacheycat/agentkit.git
+pydantic>=2
