@@ -59,3 +59,15 @@ def test_no_feedback_before_one_hour(monkeypatch, memory):
     i = memory.add("playbook", "wait for confirmation before chasing a breakout move")
     score(monkeypatch, memory, [("BTC", "long")], {"BTC": 105}, age_h=0.5, recalled=[i])
     assert memory.all("playbook")[0]["wins"] == 0
+
+
+def test_move_relative_to_btc_is_reported_but_verdict_stays_absolute(monkeypatch, memory):
+    # market falls: BTC -4%, SOL -2%. A SOL long is wrong in absolute terms yet beat BTC.
+    run = {"output": {"ts": time.time() - 7200, "horizon_h": 24, "recalled_ids": [],
+                      "stances": [{"coin": "BTC", "stance": "flat", "conviction": 2, "px_at_call": 100.0},
+                                  {"coin": "SOL", "stance": "long", "conviction": 3, "px_at_call": 100.0}]}}
+    monkeypatch.setattr(agent.hyper, "mids", lambda: {"BTC": 96.0, "SOL": 98.0})
+    by_coin = {s["coin"]: s for s in agent.score_run(run, memory)["stances"]}
+    assert by_coin["SOL"]["verdict"] == "wrong"
+    assert by_coin["SOL"]["vs_btc"] == pytest.approx(0.02)
+    assert by_coin["BTC"]["vs_btc"] is None
