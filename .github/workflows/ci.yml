@@ -1,0 +1,26 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install (agentkit is a private repo, so authenticate git)
+        env:
+          AGENTKIT_TOKEN: ${{ secrets.AGENTKIT_TOKEN }}
+        run: |
+          git config --global url."https://x-access-token:${AGENTKIT_TOKEN}@github.com/".insteadOf "https://github.com/"
+          pip install -r requirements-dev.txt
+      - run: ruff check .
+      - run: pytest -q
