@@ -239,6 +239,8 @@ def score_run(run: dict, memory: Memory) -> dict | None:
     mids = hyper.mids()
     age_h = (time.time() - out["ts"]) / 3600
     stances, correct = [], 0
+    px0_btc = next((s.get("px_at_call") for s in out["stances"] if s["coin"] == "BTC"), None)
+    btc_move = (mids["BTC"] / px0_btc - 1) if px0_btc and mids.get("BTC") else None
     for s in out["stances"]:
         px0, px1 = s.get("px_at_call"), mids.get(s["coin"])
         if not px0 or not px1:
@@ -250,7 +252,10 @@ def score_run(run: dict, memory: Memory) -> dict | None:
             ok = move > NOISE_BAND / 3 if s["stance"] == "long" else move < -NOISE_BAND / 3
         correct += ok
         stances.append({"coin": s["coin"], "stance": s["stance"], "conviction": s["conviction"],
-                        "move": round(move, 4), "verdict": "correct" if ok else "wrong"})
+                        "move": round(move, 4),
+                        # context only: the verdict above stays absolute
+                        "vs_btc": round(move - btc_move, 4) if btc_move is not None and s["coin"] != "BTC" else None,
+                        "verdict": "correct" if ok else "wrong"})
     if not stances:
         return None
     scored = {"when": f"{age_h:.1f}h ago", "age_h": round(age_h, 2), "final": age_h >= out["horizon_h"],
